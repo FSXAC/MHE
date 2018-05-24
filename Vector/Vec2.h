@@ -1,16 +1,17 @@
 #pragma once
 
-namespace mhe {
-
-
-/* 2D Vectors */
+namespace mhe
+{
 
 // Base class
-<template typename T>
-class Vec2
+<template typename T> class Vec2
 {
-public:
-    Vec2(T x, T y) { m_x = x; m_y = y; }
+  public:
+    Vec2(T x, T y)
+    {
+        m_x = x;
+        m_y = y;
+    }
     ~Vec2() = default;
 
     void setX(T x);
@@ -25,7 +26,7 @@ public:
     Vec2<T> unit() const;
     Vec2<T> project(const Vec2<T> &v, bool flip = false) const;
 
-public:
+  public:
     Vec2<T> operator+() const;
     Vec2<T> operator-() const;
     Vec2<T> operator+(const Vec2<T> &v) const;
@@ -33,17 +34,17 @@ public:
     Vec2<T> operator*(double s) const;
     Vec2<T> operator/(double s) const;
 
-    Vec2<T> & operator+=(const Vec2<T> &v);
-    Vec2<T> & operator-=(const Vec2<T> &v);
-    Vec2<T> & operator*=(double s);
-    Vec2<T> & operator/=(double s);
+    Vec2<T> &operator+=(const Vec2<T> &v);
+    Vec2<T> &operator-=(const Vec2<T> &v);
+    Vec2<T> &operator*=(double s);
+    Vec2<T> &operator/=(double s);
 
-    T& operator[](int i);
-    const T& operator[](int i) const;
+    T &operator[](int i);
+    const T &operator[](int i) const;
 
     friend double dot(const Vec2<T> &a, const Vec2<T> &b);
 
-private:
+  private:
     T m_x;
     T m_y;
 }
@@ -67,4 +68,4 @@ class Vec2lf : public Vec2<double>
     ~Vec2lf() = default;
 }
 
-}
+} // namespace mhe
