@@ -1,75 +1,183 @@
 #pragma once
 
+#include <math.h>
+
 namespace mhe
 {
 
-// Base class
-<template typename T> class Vec3
+class Vec3f
 {
-  public:
-    Vec3(T x, T y, T z)
-    {
-        m_x = x;
-        m_y = y;
-        m_z = z;
-    }
-    ~Vec3() = default;
+public:
+	Vec3f(float x, float y, float z);
+	~Vec3f() = default;
 
-    void setX(T x);
-    void setY(T y);
-    void setZ(T z);
+	void setX(float x);
+	void setY(float y);
+    void setZ(float z);
 
-    T x() const { return m_x; }
-    T y() const { return m_y; }
-    T z() const { return m_z; }
+	float x() const { return m_x; }
+	float y() const { return m_y; }
+    float z() const { return m_z; }
 
-    double magSq() const;
-    double mag() const;
-    Vec3<T> unit() const;
-    Vec3<T> project(const Vec3<T> &v, bool flip = false) const;
+	float magSq() const;
+	float mag() const;
+	Vec3f unit() const;
+	Vec3f project(const Vec3f &v, bool flip = false) const;
+	void normalize();
+	void lerpTo(const Vec3f &v, float t);
 
-  public:
-    Vec3<T> operator+() const;
-    Vec3<T> operator-() const;
-    Vec3<T> operator+(const Vec3<T> &v) const;
-    Vec3<T> operator-(const Vec3<T> &v) const;
-    Vec3<T> operator*(double s) const;
-    Vec3<T> operator/(double s) const;
+public:
+	Vec3f operator+() const;
+	Vec3f operator-() const;
+	Vec3f operator+(const Vec3f &v) const;
+	Vec3f operator-(const Vec3f &v) const;
+	Vec3f operator*(float s) const;
+	Vec3f operator/(float s) const;
 
-    Vec3<T> &operator+=(const Vec3<T> &v);
-    Vec3<T> &operator-=(const Vec3<T> &v);
-    Vec3<T> &operator*=(double s);
-    Vec3<T> &operator/=(double s);
+	Vec3f &operator+=(const Vec3f &v);
+	Vec3f &operator-=(const Vec3f &v);
+	Vec3f &operator*=(float s);
+	Vec3f &operator/=(float s);
 
-    T &operator[](int i);
-    const T &operator[](int i) const;
+private:
+	float m_x;
+	float m_y;
+    float m_z;
+};
 
-    friend double dot(const Vec3<T> &a, const Vec3<T> &b);
-    friend Vec3<T> cross(const Vec3<T> &a, const Vec3<T> &b);
+float dot(const Vec3f &a, const Vec3f &b);
+Vec3f cross(const Vec3f &a, const Vec3f &b);
 
-  private:
-    T m_x;
-    T m_y;
-    T m_z;
+
+/* Inline implementation */
+__forceinline Vec3f::Vec3f(float x, float y, float z)
+{
+	m_x = x;
+	m_y = y;
+    m_z = z;
 }
 
-// Derived classes
-class Vec3i : public Vec3<int>
+__forceinline void Vec3f::setX(float x)
 {
-    Vec3i(int x, int y, int z) : Vec3<int>(x, y, z) {}
-    ~Vec3i() = default;
+	m_x = x;
 }
 
-class Vec3f : public Vec3<float>
+__forceinline void Vec3f::setY(float y)
 {
-    Vec3f(float x, float y, float z) : Vec3<float>(x, y, z) {}
-    ~Vec3f() = default;
+	m_y = y;
 }
 
-class Vec3lf : public Vec3<double>
+__forceinline void Vec3f::setZ(float z)
 {
-    Vec3lf(double x, double y, double z) : Vec3<double>(x, y, z) {}
-    ~Vec3lf() = default;
+    m_z = z;
+}
+
+__forceinline float Vec3f::magSq() const
+{
+	return m_x * m_x + m_y * m_y + m_z * m_z;
+}
+
+__forceinline float Vec3f::mag() const
+{
+	return sqrt(magSq());
+}
+
+__forceinline Vec3f Vec3f::unit() const
+{
+	const float norm = mag();
+	return Vec3f(m_x / norm, m_y / norm, m_z / norm);
+}
+
+__forceinline Vec3f Vec3f::project(const Vec3f &v, bool flip) const
+{
+	return v * dot(*this, v) / v.magSq() * (flip ? -1.0f : 1.0f);
+}
+
+__forceinline void Vec3f::normalize()
+{
+    *this /= mag();
+}
+
+__forceinline void Vec3f::lerpTo(const Vec3f &v, float t)
+{
+    *this *= 1.0f - t;
+    *this += v * t;
+}
+
+__forceinline Vec3f Vec3f::operator+() const
+{
+	return *this;
+}
+
+__forceinline Vec3f Vec3f::operator-() const
+{
+	return Vec3f(-m_x, -m_y, -m_z);
+}
+
+__forceinline Vec3f Vec3f::operator+(const Vec3f &v) const
+{
+	return Vec3f(m_x + v.x(), m_y + v.y(), m_z + v.z());
+}
+
+__forceinline Vec3f Vec3f::operator-(const Vec3f &v) const
+{
+	return Vec3f(m_x - v.x(), m_y - v.y(), m_z - v.z());
+}
+
+__forceinline Vec3f Vec3f::operator*(float s) const
+{
+	return Vec3f(m_x * s, m_y * s, m_z * s);
+}
+
+__forceinline Vec3f Vec3f::operator/(float s) const
+{
+	return Vec3f(m_x / s, m_y / s, m_y / s);
+}
+
+__forceinline Vec3f &Vec3f::operator+=(const Vec3f &v)
+{
+	m_x += v.x();
+	m_y += v.y();
+    m_z += v.z();
+	return *this;
+}
+
+__forceinline Vec3f &Vec3f::operator-=(const Vec3f &v)
+{
+	m_x -= v.x();
+	m_y -= v.y();
+    m_z -= v.z();
+	return *this;
+}
+
+__forceinline Vec3f &Vec3f::operator*=(float s)
+{
+	m_x *= s;
+	m_y *= s;
+    m_z *= s;
+	return *this;
+}
+
+__forceinline Vec3f &Vec3f::operator/=(float s)
+{
+	m_x /= s;
+	m_y /= s;
+    m_z /= s;
+	return *this;
+}
+
+__forceinline float dot(const Vec3f &a, const Vec3f &b)
+{
+	return a.x() * b.x() + a.y() * b.y() + a.z() * b.z();
+}
+
+__forceinline Vec3f cross(const Vec3f &a, const Vec3f &b)
+{
+	return Vec3f(
+        a.y() * b.z() - a.z() * b.y(),
+        a.z() * b.x() - a.x() * b.z(),
+        a.x() * b.y() - a.y() * b.x()
+    );
 }
 
 } // namespace mhe

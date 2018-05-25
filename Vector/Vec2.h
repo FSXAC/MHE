@@ -1,71 +1,172 @@
 #pragma once
 
+#include <math.h>
+
 namespace mhe
 {
 
-// Base class
-<template typename T> class Vec2
+class Vec2f
 {
-  public:
-    Vec2(T x, T y)
-    {
-        m_x = x;
-        m_y = y;
-    }
-    ~Vec2() = default;
+public:
+	Vec2f(float x, float y);
+	~Vec2f() = default;
 
-    void setX(T x);
-    void setY(T y);
+	void setX(float x);
+	void setY(float y);
 
-    T x() const { return m_x; }
-    T y() const { return m_y; }
+	float x() const { return m_x; }
+	float y() const { return m_y; }
 
-    double magSq() const;
-    double mag() const;
-    double heading() const;
-    Vec2<T> unit() const;
-    Vec2<T> project(const Vec2<T> &v, bool flip = false) const;
+	float magSq() const;
+	float mag() const;
+	float heading() const;
+	Vec2f unit() const;
+	Vec2f project(const Vec2f &v, bool flip = false) const;
+	void normalize();
+	void lerpTo(const Vec2f &v, float t);
 
-  public:
-    Vec2<T> operator+() const;
-    Vec2<T> operator-() const;
-    Vec2<T> operator+(const Vec2<T> &v) const;
-    Vec2<T> operator-(const Vec2<T> &v) const;
-    Vec2<T> operator*(double s) const;
-    Vec2<T> operator/(double s) const;
+public:
+	Vec2f operator+() const;
+	Vec2f operator-() const;
+	Vec2f operator+(const Vec2f &v) const;
+	Vec2f operator-(const Vec2f &v) const;
+	Vec2f operator*(float s) const;
+	Vec2f operator/(float s) const;
 
-    Vec2<T> &operator+=(const Vec2<T> &v);
-    Vec2<T> &operator-=(const Vec2<T> &v);
-    Vec2<T> &operator*=(double s);
-    Vec2<T> &operator/=(double s);
+	Vec2f &operator+=(const Vec2f &v);
+	Vec2f &operator-=(const Vec2f &v);
+	Vec2f &operator*=(float s);
+	Vec2f &operator/=(float s);
 
-    T &operator[](int i);
-    const T &operator[](int i) const;
+private:
+	float m_x;
+	float m_y;
+};
 
-    friend double dot(const Vec2<T> &a, const Vec2<T> &b);
+float dot(const Vec2f &a, const Vec2f &b);
+float cross(const Vec2f &a, const Vec2f &b);
 
-  private:
-    T m_x;
-    T m_y;
+
+/* Inline implementation */
+__forceinline Vec2f::Vec2f(float x, float y)
+{
+	m_x = x;
+	m_y = y;
 }
 
-// Derived classes
-class Vec2i : public Vec2<int>
+__forceinline void Vec2f::setX(float x)
 {
-    Vec2i(int x, int y) : Vec2<int>(x, y) {}
-    ~Vec2i() = default;
+	m_x = x;
 }
 
-class Vec2f : public Vec2<float>
+__forceinline void Vec2f::setY(float y)
 {
-    Vec2f(float x, float y) : Vec2<float>(x, y) {}
-    ~Vec2f() = default;
+	m_y = y;
 }
 
-class Vec2lf : public Vec2<double>
+__forceinline float Vec2f::magSq() const
 {
-    Vec2lf(double x, double y) : Vec2<double>(x, y) {}
-    ~Vec2lf() = default;
+	return m_x * m_x + m_y * m_y;
+}
+
+__forceinline float Vec2f::mag() const
+{
+	return sqrt(magSq());
+}
+
+__forceinline float Vec2f::heading() const
+{
+	return atan(static_cast<float>(m_y) / m_x);
+}
+
+__forceinline Vec2f Vec2f::unit() const
+{
+	const float norm = mag();
+	return Vec2f(m_x / norm, m_y / norm);
+}
+
+__forceinline Vec2f Vec2f::project(const Vec2f &v, bool flip) const
+{
+	return v * dot(*this, v) / v.magSq() * (flip ? -1.0f : 1.0f);
+}
+
+__forceinline void Vec2f::normalize()
+{
+	*this /= mag();
+}
+
+__forceinline void Vec2f::lerpTo(const Vec2f &v, float t)
+{
+	*this *= 1.0f - t;
+	*this += v * t;
+}
+
+__forceinline Vec2f Vec2f::operator+() const
+{
+	return *this;
+}
+
+__forceinline Vec2f Vec2f::operator-() const
+{
+	return Vec2f(-m_x, -m_y);
+}
+
+__forceinline Vec2f Vec2f::operator+(const Vec2f &v) const
+{
+	return Vec2f(m_x + v.x(), m_y + v.y());
+}
+
+__forceinline Vec2f Vec2f::operator-(const Vec2f &v) const
+{
+	return Vec2f(m_x - v.x(), m_y - v.y());
+}
+
+__forceinline Vec2f Vec2f::operator*(float s) const
+{
+	return Vec2f(m_x * s, m_y * s);
+}
+
+__forceinline Vec2f Vec2f::operator/(float s) const
+{
+	return Vec2f(m_x / s, m_y / s);
+}
+
+__forceinline Vec2f &Vec2f::operator+=(const Vec2f &v)
+{
+	m_x += v.x();
+	m_y += v.y();
+	return *this;
+}
+
+__forceinline Vec2f &Vec2f::operator-=(const Vec2f &v)
+{
+	m_x -= v.x();
+	m_y -= v.y();
+	return *this;
+}
+
+__forceinline Vec2f &Vec2f::operator*=(float s)
+{
+	m_x *= s;
+	m_y *= s;
+	return *this;
+}
+
+__forceinline Vec2f &Vec2f::operator/=(float s)
+{
+	m_x /= s;
+	m_y /= s;
+	return *this;
+}
+
+__forceinline float dot(const Vec2f &a, const Vec2f &b)
+{
+	return a.x() * b.x() + a.y() * b.y();
+}
+
+__forceinline float cross(const Vec2f &a, const Vec2f &b)
+{
+	return a.x() * b.x() - a.y() * b.y();
 }
 
 } // namespace mhe
