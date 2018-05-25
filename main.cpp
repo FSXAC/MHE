@@ -9,7 +9,7 @@ using namespace mhe;
 
 int main(void)
 {
-	Vec3f a(0, 0, 0);
+	Vec3f a(2, 2, 2);
 	Vec3f b(1, 1, 1);
 	LineSegment<Vec3f> ls(a, b);
 

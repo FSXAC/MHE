@@ -8,6 +8,7 @@ namespace mhe
 class Vec2f
 {
 public:
+	Vec2f();
 	Vec2f(float x, float y);
 	~Vec2f() = default;
 
@@ -50,10 +51,16 @@ float cross(const Vec2f &a, const Vec2f &b);
 
 
 /* Inline implementation */
-__forceinline Vec2f::Vec2f(float x, float y)
+__forceinline Vec2f::Vec2f()
+	: m_x(0.0f)
+	, m_y(0.0f)
 {
-	m_x = x;
-	m_y = y;
+}
+
+__forceinline Vec2f::Vec2f(float x, float y)
+	: m_x(x)
+	, m_y(y)
+{
 }
 
 __forceinline void Vec2f::setX(float x)
