@@ -24,6 +24,8 @@ public:
 	Vec2f project(const Vec2f &v, bool flip = false) const;
 	void normalize();
 	void lerpTo(const Vec2f &v, float t);
+	void constrainMag(float c);
+	void clamp(float low, float high);
 
 public:
 	Vec2f operator+() const;
@@ -99,6 +101,22 @@ __forceinline void Vec2f::lerpTo(const Vec2f &v, float t)
 {
 	*this *= 1.0f - t;
 	*this += v * t;
+}
+
+__forceinline void Vec2f::constrainMag(float c)
+{
+	const float magnitudeSquared = magSq();
+	const float cSquared = c * c;
+	if (magnitudeSquared >= cSquared)
+	{
+		*this *= cSquared / magnitudeSquared;
+	}
+}
+
+__forceinline void Vec2f::clamp(float low, float high)
+{
+	m_x = m_x < low ? low : (m_x > high ? high : m_x);
+	m_y = m_y < low ? low : (m_y > high ? high : m_y);
 }
 
 __forceinline Vec2f Vec2f::operator+() const

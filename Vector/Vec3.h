@@ -13,11 +13,11 @@ public:
 
 	void setX(float x);
 	void setY(float y);
-    void setZ(float z);
+	void setZ(float z);
 
 	float x() const { return m_x; }
 	float y() const { return m_y; }
-    float z() const { return m_z; }
+	float z() const { return m_z; }
 
 	float magSq() const;
 	float mag() const;
@@ -25,8 +25,10 @@ public:
 	Vec3f project(const Vec3f &v, bool flip = false) const;
 	void normalize();
 	void lerpTo(const Vec3f &v, float t);
+	void constrainMag(float c);
+	void clamp(float low, float high);
 
-public:
+  public:
 	Vec3f operator+() const;
 	Vec3f operator-() const;
 	Vec3f operator+(const Vec3f &v) const;
@@ -42,7 +44,7 @@ public:
 private:
 	float m_x;
 	float m_y;
-    float m_z;
+	float m_z;
 };
 
 float dot(const Vec3f &a, const Vec3f &b);
@@ -54,7 +56,7 @@ __forceinline Vec3f::Vec3f(float x, float y, float z)
 {
 	m_x = x;
 	m_y = y;
-    m_z = z;
+	m_z = z;
 }
 
 __forceinline void Vec3f::setX(float x)
@@ -69,7 +71,7 @@ __forceinline void Vec3f::setY(float y)
 
 __forceinline void Vec3f::setZ(float z)
 {
-    m_z = z;
+	m_z = z;
 }
 
 __forceinline float Vec3f::magSq() const
@@ -95,13 +97,30 @@ __forceinline Vec3f Vec3f::project(const Vec3f &v, bool flip) const
 
 __forceinline void Vec3f::normalize()
 {
-    *this /= mag();
+	*this /= mag();
 }
 
 __forceinline void Vec3f::lerpTo(const Vec3f &v, float t)
 {
-    *this *= 1.0f - t;
-    *this += v * t;
+	*this *= 1.0f - t;
+	*this += v * t;
+}
+
+__forceinline void Vec3f::constrainMag(float c)
+{
+	const float magnitudeSquared = magSq();
+	const float cSquared = c * c;
+	if (magnitudeSquared >= cSquared)
+	{
+		*this *= cSquared / magnitudeSquared;
+	}
+}
+
+__forceinline void Vec3f::clamp(float low, float high)
+{
+	m_x = m_x < low ? low : (m_x > high ? high : m_x);
+	m_y = m_y < low ? low : (m_y > high ? high : m_y);
+	m_z = m_z < low ? low : (m_z > high ? high : m_z);
 }
 
 __forceinline Vec3f Vec3f::operator+() const
@@ -138,7 +157,7 @@ __forceinline Vec3f &Vec3f::operator+=(const Vec3f &v)
 {
 	m_x += v.x();
 	m_y += v.y();
-    m_z += v.z();
+	m_z += v.z();
 	return *this;
 }
 
@@ -146,7 +165,7 @@ __forceinline Vec3f &Vec3f::operator-=(const Vec3f &v)
 {
 	m_x -= v.x();
 	m_y -= v.y();
-    m_z -= v.z();
+	m_z -= v.z();
 	return *this;
 }
 
@@ -154,7 +173,7 @@ __forceinline Vec3f &Vec3f::operator*=(float s)
 {
 	m_x *= s;
 	m_y *= s;
-    m_z *= s;
+	m_z *= s;
 	return *this;
 }
 
@@ -162,7 +181,7 @@ __forceinline Vec3f &Vec3f::operator/=(float s)
 {
 	m_x /= s;
 	m_y /= s;
-    m_z /= s;
+	m_z /= s;
 	return *this;
 }
 
@@ -174,10 +193,10 @@ __forceinline float dot(const Vec3f &a, const Vec3f &b)
 __forceinline Vec3f cross(const Vec3f &a, const Vec3f &b)
 {
 	return Vec3f(
-        a.y() * b.z() - a.z() * b.y(),
-        a.z() * b.x() - a.x() * b.z(),
-        a.x() * b.y() - a.y() * b.x()
-    );
+		a.y() * b.z() - a.z() * b.y(),
+		a.z() * b.x() - a.x() * b.z(),
+		a.x() * b.y() - a.y() * b.x()
+	);
 }
 
 } // namespace mhe
