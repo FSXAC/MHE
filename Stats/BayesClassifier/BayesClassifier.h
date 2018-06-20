@@ -21,24 +21,29 @@ public:
 	void predict(const std::string &input, std::string &output) const;
 
 private:
+	void checkResponse(const std::string &response);
+	std::vector<std::string> splitString(const std::string &str, char delimiter = ' ');
+	std::string toLower(const std::string &str);
 	void increment(const std::string &token, const std::string &response);
 	void compute();
 
 private:
-	struct responseData
+	struct ResponseData
 	{
-		unsigned int count = 1;
-		unsigned int tokenCount = 0;
+		unsigned int count;
+		unsigned int tokenCount;
 	};
 
-	struct wordData
+	struct WordData
 	{
-		unsigned int wordCount = 0;
+		std::string word;
+		std::string response;
+		unsigned int count;
 	};
 
 private:
-	std::map<std::string, std::string> m_dictionary;
-	std::map<std::string, std::string> m_responses;
+	std::map<std::string, WordData> m_dictionary;
+	std::map<std::string, ResponseData> m_responses;
 
 	std::vector<std::string> m_wordList;
 	std::vector<std::string> m_responseList;
