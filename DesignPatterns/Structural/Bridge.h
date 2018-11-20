@@ -13,6 +13,8 @@
 #include <iostream>
 #include <string>
 
+// Forward declaration
+
 // !!! Abstract
 class AbstractButton
 {
@@ -39,7 +41,7 @@ class AbstractPushButton : public AbstractButton
 public:
 	AbstractPushButton(const std::string& buttonName, int id, float pressure)
 	{
-		// m_impl = new PushButtonImpl();
+		m_impl = new PushButtonImpl(buttonName, id, pressure);
 	}
 };
 
@@ -48,7 +50,7 @@ class AbstractRadialButton : public AbstractButton
 public:
 	AbstractRadialButton(const std::string& buttonName, int id, float angle)
 	{
-		// m_impl = new RadialButtonImpl();
+		m_impl = new RadialButtonImpl(buttonName, id, angle);
 	}
 };
 
