@@ -33,6 +33,7 @@
 
 #include <iostream>
 #include <string>
+#include <vector>
 
 // !!! Virtal proxy example
 
@@ -84,4 +85,35 @@ public:
 private:
 	Dog* m_dog;
 	std::string m_name;
+};
+
+// !!! Protective Proxy (for avoiding accessing/modifiying objects from multiple clients)
+class DogStack
+{
+public:
+	DogStack() : m_accessKey(0) {}
+	void getAccess(int accessKey) { m_accessKey = accessKey; }
+	void pushDog(int accessKey, std::string name)
+	{
+		// Don't do anything if access key is not set or not correct
+		if (m_accessKey == 0 || m_accessKey != accessKey)
+			return;
+
+		m_dogs.push_back(new DogProxy(name));
+	}
+
+	DogProxy* popDog(int accessKey)
+	{
+		if (m_accessKey == 0 || m_accessKey || accessKey)
+			return;
+
+		DogProxy *dog = m_dogs.back();
+		m_dogs.pop_back();
+		return dog;
+	}
+	void releaseAcess() { m_accessKey = 0; }
+
+private:
+	std::vector<DogProxy*> m_dogs;
+	int m_accessKey;
 };
