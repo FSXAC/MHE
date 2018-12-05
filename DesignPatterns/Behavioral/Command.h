@@ -3,7 +3,7 @@
  * 
  * This could be useful for rebinding keyboard->actions
  * 
- * Command pattern would also allow undo/redo
+ * Command pattern would also allow undo/redo (by using Momento pattern together)
  * 
  * Checklist:
  * 1. Define a command interface with method signature like execute()

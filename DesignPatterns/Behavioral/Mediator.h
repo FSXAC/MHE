@@ -11,6 +11,11 @@
  * 5. No controller/god object
  * 
  * The simplist example is linked lists vs. arrays
+ * 
+ * Shared lock controllers / observers could be a mediator
+ * 
+ * Many players <-> server could also be mediators
+ * 
  */
 
 #pragma once
